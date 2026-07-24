@@ -4,7 +4,8 @@ import path from "path";
 
 export async function GET() {
   try {
-    const filePath = path.join(process.cwd(), "public", "CleanVault-Setup.exe");
+    const filename = "Sentry Drive_0.2.0_x64-setup (1).exe";
+    const filePath = path.join(process.cwd(), "public", filename);
     
     if (!fs.existsSync(filePath)) {
       return new NextResponse("File not found in public folder", { status: 404 });
@@ -16,7 +17,7 @@ export async function GET() {
       status: 200,
       headers: {
         "Content-Type": "application/octet-stream",
-        "Content-Disposition": 'attachment; filename="CleanVault-Setup.exe"',
+        "Content-Disposition": `attachment; filename="${filename}"`,
         "Content-Length": fileBuffer.length.toString(),
         "Cache-Control": "no-cache, no-store, must-revalidate",
       },
