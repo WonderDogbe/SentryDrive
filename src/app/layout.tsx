@@ -16,6 +16,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "SentryDrive | Protect What Matters",
   description: "SentryDrive is an offline-first premium tool to protect your files and clean up the rest.",
+  icons: {
+    icon: "/CV-LOGO-W.png",
+    shortcut: "/CV-LOGO-W.png",
+    apple: "/CV-LOGO-W.png",
+  },
   openGraph: {
     title: "SentryDrive",
     description: "SentryDrive is an offline-first premium tool to protect your files and clean up the rest.",
