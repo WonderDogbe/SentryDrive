@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import DownloadButton from "./DownloadButton";
 
 export default function Hero() {
   return (
@@ -11,7 +12,7 @@ export default function Hero() {
       className="flex flex-col gap-6"
     >
       <div className="inline-flex w-fit items-center rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
-        Version 2.0 • Cross-Platform • Offline
+        Version 0.1.0 • Cross-Platform • Offline
       </div>
       <h1 className="text-4xl lg:text-5xl font-semibold tracking-tight leading-tight">
         Protect What Matters.<br/>
@@ -21,9 +22,9 @@ export default function Hero() {
         Clean Vault is an offline-first premium tool to protect your files and clean up the rest. Built for speed and simplicity.
       </p>
       <div className="flex flex-wrap gap-4 mt-2">
-        <button className="bg-foreground text-background px-6 py-3 rounded-md font-medium hover:bg-foreground/90 transition-colors active:scale-[0.98]">
+        <DownloadButton className="bg-foreground text-background px-6 py-3 rounded-md font-medium hover:bg-foreground/90 transition-colors active:scale-[0.98]">
           Download Now
-        </button>
+        </DownloadButton>
         <button className="bg-secondary text-secondary-foreground border border-border px-6 py-3 rounded-md font-medium hover:bg-secondary/80 transition-colors active:scale-[0.98]">
           Learn More
         </button>

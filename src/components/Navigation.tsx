@@ -1,4 +1,5 @@
 import { ThemeToggle } from "./ThemeToggle";
+import DownloadButton from "./DownloadButton";
 
 export default function Navigation() {
   return (
@@ -11,9 +12,9 @@ export default function Navigation() {
         <a href="#features" className="hover:text-primary transition-colors hidden md:inline-block">Features</a>
         <a href="#privacy" className="hover:text-primary transition-colors hidden md:inline-block">Privacy</a>
         <ThemeToggle />
-        <button className="bg-foreground text-background px-4 py-2 rounded-md font-medium hover:bg-foreground/90 transition-colors active:scale-[0.98]">
+        <DownloadButton className="bg-foreground text-background px-4 py-2 rounded-md font-medium hover:bg-foreground/90 transition-colors active:scale-[0.98]">
           Download
-        </button>
+        </DownloadButton>
       </nav>
     </header>
   );
