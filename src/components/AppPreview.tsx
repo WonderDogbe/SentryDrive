@@ -12,13 +12,8 @@ export default function AppPreview() {
     >
       <img 
         src="/lightscreenshot.png" 
-        alt="SentryDrive Dark Mode Preview" 
-        className="w-full h-full object-cover hidden dark:block" 
-      />
-      <img 
-        src="/darkscreenshot.png" 
-        alt="SentryDrive Light Mode Preview" 
-        className="w-full h-full object-cover dark:hidden" 
+        alt="SentryDrive Preview" 
+        className="w-full h-full object-cover" 
       />
     </motion.div>
   );
