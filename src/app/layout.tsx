@@ -14,17 +14,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SecureVault | Protect What Matters",
-  description: "SecureVault is an offline-first premium tool to protect your files and clean up the rest.",
+  title: "Clean Vault | Protect What Matters",
+  description: "Clean Vault is an offline-first premium tool to protect your files and clean up the rest.",
   openGraph: {
-    title: "SecureVault",
-    description: "SecureVault is an offline-first premium tool to protect your files and clean up the rest.",
+    title: "Clean Vault",
+    description: "Clean Vault is an offline-first premium tool to protect your files and clean up the rest.",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "SecureVault",
-    description: "SecureVault is an offline-first premium tool to protect your files and clean up the rest.",
+    title: "Clean Vault",
+    description: "Clean Vault is an offline-first premium tool to protect your files and clean up the rest.",
   },
 };
 
