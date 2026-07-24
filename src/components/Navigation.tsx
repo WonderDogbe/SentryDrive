@@ -7,7 +7,7 @@ import DownloadButton from "./DownloadButton";
 
 export default function Navigation() {
   const pathname = usePathname();
-  const isFeaturesPage = pathname === "/features";
+  const isHomePage = pathname === "/";
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 px-6 py-4 flex items-center justify-between bg-background/80 backdrop-blur-md border-b border-border">
@@ -16,13 +16,13 @@ export default function Navigation() {
         <img src="/CV-LOGO1-W.png" alt="SentryDrive" className="h-8 md:h-10 w-auto hidden dark:block" />
       </Link>
       <nav className="flex items-center gap-6 text-sm font-medium">
-        {isFeaturesPage ? (
-          <Link href="/" className="hover:text-primary transition-colors hidden md:inline-block">
-            Home
-          </Link>
-        ) : (
+        {isHomePage ? (
           <Link href="/features" className="hover:text-primary transition-colors hidden md:inline-block">
             Features
+          </Link>
+        ) : (
+          <Link href="/" className="hover:text-primary transition-colors hidden md:inline-block">
+            Home
           </Link>
         )}
         <ThemeToggle />
