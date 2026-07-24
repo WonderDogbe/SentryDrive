@@ -40,7 +40,7 @@ export default function Hero() {
       <div className="flex flex-wrap gap-4 mt-2">
         <DownloadButton className="bg-foreground text-background px-6 py-3 rounded-md font-medium hover:bg-foreground/90 transition-colors active:scale-[0.98] inline-flex items-center justify-center gap-2">
           <Download className="w-4 h-4" />
-          <span>Download Now</span>
+          <span>Download</span>
         </DownloadButton>
         <a 
           href="https://github.com/christliebdela/SentryDrive" 
