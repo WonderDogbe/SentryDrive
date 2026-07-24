@@ -11,12 +11,12 @@ export default function AppPreview() {
       className="w-full max-w-xl aspect-[4/3] rounded-lg border border-border bg-secondary flex items-center justify-center shadow-2xl overflow-hidden relative"
     >
       <img 
-        src="/darkscreenshot.png" 
+        src="/lightscreenshot.png" 
         alt="SentryDrive Dark Mode Preview" 
         className="w-full h-full object-cover hidden dark:block" 
       />
       <img 
-        src="/lightscreenshot.png" 
+        src="/darkscreenshot.png" 
         alt="SentryDrive Light Mode Preview" 
         className="w-full h-full object-cover dark:hidden" 
       />

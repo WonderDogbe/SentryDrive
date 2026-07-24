@@ -12,7 +12,7 @@ export default function DownloadButton({
   };
 
   return (
-    <button onClick={handleDownload} className={className}>
+    <button onClick={handleDownload} className={`cursor-pointer ${className}`}>
       {children}
     </button>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Download } from "lucide-react";
 import DownloadButton from "./DownloadButton";
 
 const GithubIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
@@ -37,8 +38,9 @@ export default function Hero() {
         SentryDrive is an offline-first premium tool to protect your files and clean up the rest. Built for speed and simplicity.
       </p>
       <div className="flex flex-wrap gap-4 mt-2">
-        <DownloadButton className="bg-foreground text-background px-6 py-3 rounded-md font-medium hover:bg-foreground/90 transition-colors active:scale-[0.98]">
-          Download Now
+        <DownloadButton className="bg-foreground text-background px-6 py-3 rounded-md font-medium hover:bg-foreground/90 transition-colors active:scale-[0.98] inline-flex items-center justify-center gap-2">
+          <Download className="w-4 h-4" />
+          <span>Download Now</span>
         </DownloadButton>
         <a 
           href="https://github.com/christliebdela/SentryDrive" 
