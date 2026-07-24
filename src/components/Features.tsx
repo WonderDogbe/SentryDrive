@@ -1,6 +1,6 @@
 "use client";
 
-import { Lock, HardDriveDownload, Trash2, Cpu, Laptop, Moon } from "lucide-react";
+import { Lock, HardDriveDownload, Trash2, Cpu, Laptop, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
 
 const featureList = [
@@ -9,7 +9,7 @@ const featureList = [
   { icon: Trash2, label: "Smart Cleanup" },
   { icon: Cpu, label: "Built with Rust" },
   { icon: Laptop, label: "Works Offline" },
-  { icon: Moon, label: "Dark Mode" },
+  { icon: ShieldCheck, label: "Zero Telemetry" },
 ];
 
 export default function Features() {
