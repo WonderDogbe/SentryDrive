@@ -8,7 +8,7 @@ export default function DownloadArea() {
         <span>•</span>
         <span>64-bit</span>
         <span>•</span>
-        <span>~12 MB</span>
+        <span>~3.1 MB</span>
       </div>
     </div>
   );

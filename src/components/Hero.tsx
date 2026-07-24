@@ -19,15 +19,18 @@ export default function Hero() {
         <span className="text-muted-foreground">Clean What Doesn't.</span>
       </h1>
       <p className="text-lg text-muted-foreground">
-        Clean Vault is an offline-first premium tool to protect your files and clean up the rest. Built for speed and simplicity.
+        SentryDrive is an offline-first premium tool to protect your files and clean up the rest. Built for speed and simplicity.
       </p>
       <div className="flex flex-wrap gap-4 mt-2">
         <DownloadButton className="bg-foreground text-background px-6 py-3 rounded-md font-medium hover:bg-foreground/90 transition-colors active:scale-[0.98]">
           Download Now
         </DownloadButton>
-        <button className="bg-secondary text-secondary-foreground border border-border px-6 py-3 rounded-md font-medium hover:bg-secondary/80 transition-colors active:scale-[0.98]">
-          Learn More
-        </button>
+        <a 
+          href="#" 
+          className="bg-secondary text-secondary-foreground border border-border px-6 py-3 rounded-md font-medium hover:bg-secondary/80 transition-colors active:scale-[0.98] inline-flex items-center justify-center"
+        >
+          GitHub
+        </a>
       </div>
     </motion.div>
   );

@@ -14,17 +14,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Clean Vault | Protect What Matters",
-  description: "Clean Vault is an offline-first premium tool to protect your files and clean up the rest.",
+  title: "SentryDrive | Protect What Matters",
+  description: "SentryDrive is an offline-first premium tool to protect your files and clean up the rest.",
   openGraph: {
-    title: "Clean Vault",
-    description: "Clean Vault is an offline-first premium tool to protect your files and clean up the rest.",
+    title: "SentryDrive",
+    description: "SentryDrive is an offline-first premium tool to protect your files and clean up the rest.",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Clean Vault",
-    description: "Clean Vault is an offline-first premium tool to protect your files and clean up the rest.",
+    title: "SentryDrive",
+    description: "SentryDrive is an offline-first premium tool to protect your files and clean up the rest.",
   },
 };
 
