@@ -4,7 +4,7 @@ import path from "path";
 
 export async function GET() {
   try {
-    const filename = "Sentry Drive_0.2.0_x64-setup (1).exe";
+    const filename = "Sentry Drive_0.3.0_x64-setup.exe";
     const filePath = path.join(process.cwd(), "public", filename);
     
     if (!fs.existsSync(filePath)) {

@@ -4,11 +4,11 @@ export default function DownloadArea() {
       <div className="flex items-center gap-4 text-xs text-muted-foreground">
         <span>Windows, macOS, Linux</span>
         <span>•</span>
-        <span>v0.2.0</span>
+        <span>v0.3.0</span>
         <span>•</span>
         <span>64-bit</span>
         <span>•</span>
-        <span>~10.2 MB</span>
+        <span>~10.4 MB</span>
       </div>
     </div>
   );
