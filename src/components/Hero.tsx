@@ -28,7 +28,7 @@ export default function Hero() {
       className="flex flex-col gap-6"
     >
       <div className="inline-flex w-fit items-center rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
-        Version 0.3.0 • Cross-Platform • Offline
+        Version 0.4.0 • Cross-Platform • Offline
       </div>
       <h1 className="text-4xl lg:text-5xl font-semibold tracking-tight leading-tight">
         Protect What Matters.<br/>
