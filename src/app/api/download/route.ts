@@ -1,28 +1,23 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
 
-export async function GET() {
+export const dynamic = "force-dynamic";
+
+export async function GET(request: Request) {
   try {
-    const filename = "Sentry Drive_0.4.0_x64-setup.exe";
-    const filePath = path.join(process.cwd(), "public", filename);
-    
-    if (!fs.existsSync(filePath)) {
-      return new NextResponse("File not found in public folder", { status: 404 });
+    const { searchParams } = new URL(request.url);
+    const platform = searchParams.get("platform") || "windows";
+    const version = searchParams.get("v") || searchParams.get("version");
+
+    // Build URL to stream endpoint without pre-incrementing
+    const redirectUrl = new URL("/api/download/file", request.url);
+    redirectUrl.searchParams.set("platform", platform);
+    if (version) {
+      redirectUrl.searchParams.set("version", version);
     }
 
-    const fileBuffer = fs.readFileSync(filePath);
-
-    return new NextResponse(fileBuffer, {
-      status: 200,
-      headers: {
-        "Content-Type": "application/octet-stream",
-        "Content-Disposition": `attachment; filename="${filename}"`,
-        "Content-Length": fileBuffer.length.toString(),
-        "Cache-Control": "no-cache, no-store, must-revalidate",
-      },
-    });
+    return NextResponse.redirect(redirectUrl.toString(), 307);
   } catch (error) {
-    return new NextResponse("Error streaming setup executable", { status: 500 });
+    console.error("Error in download redirect route:", error);
+    return NextResponse.redirect(new URL("/api/download/file", request.url), 307);
   }
 }

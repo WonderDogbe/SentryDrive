@@ -1,0 +1,23 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model ReleaseDownload {
+  id            String   @id @default(uuid())
+  version       String
+  platform      String   // "windows" | "macOS" | "linux"
+  downloadCount Int      @default(0)
+  downloadUrl   String
+  isLatest      Boolean  @default(false)
+  releasedAt    DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([version, platform])
+  @@index([platform, isLatest])
+}
