@@ -15,12 +15,14 @@ const globalForDownloads = globalThis as unknown as {
   downloadCounts: Record<string, number>;
 };
 
-globalForDownloads.downloadCounts = {
-  windows: 0,
-  macOS: 0,
-  linux: 0,
-  other_devices: 0,
-};
+if (!globalForDownloads.downloadCounts) {
+  globalForDownloads.downloadCounts = {
+    windows: 0,
+    macOS: 0,
+    linux: 0,
+    other_devices: 0,
+  };
+}
 
 const localCounts = globalForDownloads.downloadCounts;
 
@@ -67,6 +69,28 @@ export async function incrementGlobalCount(platform: string): Promise<void> {
 
   // 2. Increment local memory & file
   localCounts[key] = (localCounts[key] || 0) + 1;
+  writeLocalFile(localCounts);
+}
+
+export async function resetGlobalCounts(): Promise<void> {
+  // 1. Reset Upstash Redis / Vercel KV cloud store if connected
+  if (redis) {
+    try {
+      const keys = ["downloads:windows", "downloads:macOS", "downloads:linux", "downloads:other_devices"];
+      for (const k of keys) {
+        await redis.set(k, 0);
+      }
+      console.log("[GlobalStore] Upstash Redis / Vercel KV cloud store successfully reset to 0.");
+    } catch (err) {
+      console.error("[GlobalStore] Redis reset error:", err);
+    }
+  }
+
+  // 2. Reset memory & file
+  localCounts.windows = 0;
+  localCounts.macOS = 0;
+  localCounts.linux = 0;
+  localCounts.other_devices = 0;
   writeLocalFile(localCounts);
 }
 

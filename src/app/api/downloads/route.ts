@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { syncGitHubReleases } from "@/lib/githubSync";
-import { getGlobalCounts } from "@/lib/globalStore";
+import { getGlobalCounts, resetGlobalCounts } from "@/lib/globalStore";
 
 export const dynamic = "force-dynamic";
 
@@ -85,12 +85,19 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const targetPlatform = searchParams.get("platform") || "windows";
+    const isReset = searchParams.get("reset") === "true";
+
+    // If reset parameter is present, flush Upstash Redis KV, local memory, & Prisma DB to 0
+    if (isReset) {
+      await resetGlobalCounts();
+      await prisma.releaseDownload.updateMany({ data: { downloadCount: 0 } }).catch(() => {});
+    }
 
     await syncGitHubReleases().catch((err) =>
       console.warn("GitHub release sync non-blocking error:", err)
     );
 
-    const globalCounts: Record<string, number> = await getGlobalCounts().catch(() => ({}));
+    const globalCounts: Record<string, number> = await getGlobalCounts();
 
     let baseReleases = DEFAULT_RELEASES;
 
