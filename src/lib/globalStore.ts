@@ -15,14 +15,12 @@ const globalForDownloads = globalThis as unknown as {
   downloadCounts: Record<string, number>;
 };
 
-if (!globalForDownloads.downloadCounts) {
-  globalForDownloads.downloadCounts = {
-    windows: 0,
-    macOS: 0,
-    linux: 0,
-    other_devices: 0,
-  };
-}
+globalForDownloads.downloadCounts = {
+  windows: 0,
+  macOS: 0,
+  linux: 0,
+  other_devices: 0,
+};
 
 const localCounts = globalForDownloads.downloadCounts;
 

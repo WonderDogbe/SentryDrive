@@ -90,9 +90,9 @@ export async function GET(request: Request) {
       console.warn("GitHub release sync non-blocking error:", err)
     );
 
-    const globalCounts = await getGlobalCounts();
+    const globalCounts: Record<string, number> = await getGlobalCounts().catch(() => ({}));
 
-    let mappedReleases: typeof DEFAULT_RELEASES = [];
+    let baseReleases = DEFAULT_RELEASES;
 
     try {
       const dbReleases = await prisma.releaseDownload.findMany({
@@ -103,35 +103,31 @@ export async function GET(request: Request) {
       });
 
       if (dbReleases && dbReleases.length > 0) {
-        mappedReleases = dbReleases.map((rel) => {
-          const key = rel.platform === "other_devices" ? "other_devices" : rel.platform;
-          const globalExtra = rel.isLatest ? (globalCounts[key] || 0) : 0;
-          return {
-            id: rel.id,
-            version: rel.version,
-            platform: rel.platform,
-            downloads: Math.max(rel.downloadCount, globalExtra),
-            downloadUrl: rel.downloadUrl,
-            isLatest: rel.isLatest,
-            releasedAt: rel.releasedAt.toISOString(),
-          };
-        });
+        baseReleases = dbReleases.map((rel) => ({
+          id: rel.id,
+          version: rel.version,
+          platform: rel.platform,
+          downloads: rel.downloadCount,
+          downloadUrl: rel.downloadUrl,
+          isLatest: rel.isLatest,
+          releasedAt: rel.releasedAt.toISOString(),
+        }));
       }
     } catch (dbError) {
-      console.warn("Prisma DB read error, using default releases with global counts:", dbError);
+      console.warn("Prisma DB read error, using default releases:", dbError);
     }
 
-    if (mappedReleases.length === 0) {
-      mappedReleases = DEFAULT_RELEASES.map((rel) => {
-        const key = rel.platform === "other_devices" ? "other_devices" : rel.platform;
-        const globalExtra = rel.isLatest ? (globalCounts[key] || 0) : 0;
-        return {
-          ...rel,
-          downloads: Math.max(rel.downloads, globalExtra),
-        };
-      });
-    }
+    // Consistently merge global counts into current release version objects
+    const mappedReleases = baseReleases.map((rel) => {
+      const key = rel.platform.toLowerCase() === "other_devices" ? "other_devices" : rel.platform.toLowerCase();
+      const globalExtra = rel.isLatest ? (globalCounts[key] || 0) : 0;
+      return {
+        ...rel,
+        downloads: Math.max(rel.downloads, globalExtra),
+      };
+    });
 
+    // Total downloads is ALWAYS the exact sum of all version release downloads
     const totalDownloads = mappedReleases.reduce((sum, r) => sum + r.downloads, 0);
 
     const latestRelease = mappedReleases.find(
@@ -159,7 +155,7 @@ export async function GET(request: Request) {
     console.error("Error fetching download statistics:", error);
     const globalCounts: Record<string, number> = await getGlobalCounts().catch(() => ({}));
     const fallbackReleases = DEFAULT_RELEASES.map((rel) => {
-      const key = rel.platform === "other_devices" ? "other_devices" : rel.platform;
+      const key = rel.platform.toLowerCase() === "other_devices" ? "other_devices" : rel.platform.toLowerCase();
       const globalExtra = rel.isLatest ? (globalCounts[key] || 0) : 0;
       return { ...rel, downloads: Math.max(rel.downloads, globalExtra) };
     });

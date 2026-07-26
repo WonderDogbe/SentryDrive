@@ -3,7 +3,14 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("Initializing release records for target platforms (Windows, macOS, Linux, Other Devices)...");
+  console.log("Resetting all release download counts to 0...");
+
+  // Explicitly reset all existing database records to 0
+  await prisma.releaseDownload.updateMany({
+    data: {
+      downloadCount: 0,
+    },
+  });
 
   const initialReleases = [
     {
@@ -73,6 +80,7 @@ async function main() {
         },
       },
       update: {
+        downloadCount: 0,
         isLatest: rel.isLatest,
         downloadUrl: rel.downloadUrl,
       },
@@ -80,7 +88,7 @@ async function main() {
     });
   }
 
-  console.log("Release seeding complete including 'Other Devices' tracking category.");
+  console.log("Database reset complete. All download counts are strictly 0.");
 }
 
 main()
