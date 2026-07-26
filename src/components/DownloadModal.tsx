@@ -90,7 +90,7 @@ export default function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
           <div className="flex items-start justify-between pb-3 border-b border-slate-200 dark:border-zinc-800">
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2.5">
-                <div className="p-2.5 rounded-lg bg-emerald-100 dark:bg-emerald-500/20 border border-emerald-300 dark:border-emerald-500/30 text-emerald-800 dark:text-emerald-400">
+                <div className="p-2.5 rounded-lg bg-blue-100 dark:bg-blue-500/20 border border-blue-300 dark:border-blue-500/30 text-blue-800 dark:text-blue-400">
                   <Download className="w-5 h-5" />
                 </div>
                 <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-zinc-950 dark:text-white">
@@ -111,7 +111,7 @@ export default function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
             </button>
           </div>
 
-          {/* Platform Selection Cards - Fit & Overflow Prevention */}
+          {/* Platform Selection Cards - Blue Color Theme */}
           <div className="flex flex-col gap-3.5">
             {sortedPlatforms.map((p) => {
               const isDetected = p.id === detectedOS;
@@ -121,24 +121,24 @@ export default function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
                   onClick={() => handleSelectPlatform(p.id)}
                   className={`group relative flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-xl transition-all text-left cursor-pointer active:scale-[0.99] shadow-sm gap-3 overflow-hidden ${
                     isDetected
-                      ? "bg-emerald-500/10 dark:bg-emerald-500/10 border-2 border-emerald-600 dark:border-emerald-500"
-                      : "bg-slate-50 hover:bg-slate-100 dark:bg-zinc-800/90 dark:hover:bg-zinc-800 border border-slate-300 dark:border-zinc-700 hover:border-emerald-600 dark:hover:border-emerald-500"
+                      ? "bg-blue-500/10 dark:bg-blue-500/10 border-2 border-blue-600 dark:border-blue-500"
+                      : "bg-slate-50 hover:bg-slate-100 dark:bg-zinc-800/90 dark:hover:bg-zinc-800 border border-slate-300 dark:border-zinc-700 hover:border-blue-600 dark:hover:border-blue-500"
                   }`}
                 >
                   <div className="flex items-center gap-3.5 min-w-0">
-                    <div className="p-3 rounded-lg bg-white dark:bg-zinc-900 border border-slate-300 dark:border-zinc-700 text-emerald-700 dark:text-emerald-400 group-hover:border-emerald-500 transition-colors shadow-xs shrink-0">
+                    <div className="p-3 rounded-lg bg-white dark:bg-zinc-900 border border-slate-300 dark:border-zinc-700 text-blue-700 dark:text-blue-400 group-hover:border-blue-500 transition-colors shadow-xs shrink-0">
                       <p.Icon className="w-6 h-6" />
                     </div>
                     <div className="flex flex-col gap-0.5 min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-bold text-base sm:text-lg text-zinc-950 dark:text-white group-hover:text-emerald-800 dark:group-hover:text-emerald-300 transition-colors">
+                        <span className="font-bold text-base sm:text-lg text-zinc-950 dark:text-white group-hover:text-blue-800 dark:group-hover:text-blue-300 transition-colors">
                           {p.name}
                         </span>
-                        <span className="text-xs font-mono font-bold bg-emerald-100 dark:bg-emerald-500/20 text-emerald-900 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-500/30 px-2 py-0.5 rounded-md">
+                        <span className="text-xs font-mono font-bold bg-blue-100 dark:bg-blue-500/20 text-blue-900 dark:text-blue-300 border border-blue-300 dark:border-blue-500/30 px-2 py-0.5 rounded-md">
                           {p.badge}
                         </span>
                         {isDetected && (
-                          <span className="text-[10px] font-sans font-bold bg-emerald-600 text-white px-2 py-0.5 rounded-full flex items-center gap-1">
+                          <span className="text-[10px] font-sans font-bold bg-blue-600 text-white px-2 py-0.5 rounded-full flex items-center gap-1">
                             <CheckCircle2 className="w-3 h-3" />
                             Detected
                           </span>
@@ -150,7 +150,7 @@ export default function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
                     </div>
                   </div>
 
-                  {/* Explicit Action Button - No Overflow */}
+                  {/* Explicit Action Button */}
                   <button
                     type="button"
                     onClick={(e) => {
@@ -159,7 +159,7 @@ export default function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
                     }}
                     className={`font-bold px-3.5 py-2.5 rounded-xl text-xs sm:text-sm inline-flex items-center gap-2 shadow-md transition-all group-hover:scale-105 active:scale-95 cursor-pointer whitespace-nowrap shrink-0 self-end sm:self-center ${
                       isDetected
-                        ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+                        ? "bg-blue-600 hover:bg-blue-700 text-white"
                         : "bg-zinc-950 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-zinc-950"
                     }`}
                   >
@@ -173,7 +173,7 @@ export default function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
 
           {/* Footer Note */}
           <div className="flex items-center justify-between text-xs font-medium text-zinc-700 dark:text-zinc-300 pt-3 border-t border-slate-200 dark:border-zinc-800">
-            <span className="flex items-center gap-1.5 text-emerald-800 dark:text-emerald-400 font-bold">
+            <span className="flex items-center gap-1.5 text-blue-800 dark:text-blue-400 font-bold">
               <ShieldCheck className="w-4 h-4" />
               Verified Official Installer
             </span>
