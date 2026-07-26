@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { syncGitHubReleases } from "@/lib/githubSync";
-import { inMemoryDownloadCounts } from "@/lib/memoryStore";
+import { getGlobalCounts } from "@/lib/globalStore";
 
 export const dynamic = "force-dynamic";
 
@@ -90,6 +90,8 @@ export async function GET(request: Request) {
       console.warn("GitHub release sync non-blocking error:", err)
     );
 
+    const globalCounts = await getGlobalCounts();
+
     let mappedReleases: typeof DEFAULT_RELEASES = [];
 
     try {
@@ -102,12 +104,13 @@ export async function GET(request: Request) {
 
       if (dbReleases && dbReleases.length > 0) {
         mappedReleases = dbReleases.map((rel) => {
-          const memExtra = rel.isLatest ? (inMemoryDownloadCounts[rel.platform] || 0) : 0;
+          const key = rel.platform === "other_devices" ? "other_devices" : rel.platform;
+          const globalExtra = rel.isLatest ? (globalCounts[key] || 0) : 0;
           return {
             id: rel.id,
             version: rel.version,
             platform: rel.platform,
-            downloads: rel.downloadCount + memExtra,
+            downloads: Math.max(rel.downloadCount, globalExtra),
             downloadUrl: rel.downloadUrl,
             isLatest: rel.isLatest,
             releasedAt: rel.releasedAt.toISOString(),
@@ -115,15 +118,16 @@ export async function GET(request: Request) {
         });
       }
     } catch (dbError) {
-      console.warn("Prisma DB read error, using default releases with in-memory counts:", dbError);
+      console.warn("Prisma DB read error, using default releases with global counts:", dbError);
     }
 
     if (mappedReleases.length === 0) {
       mappedReleases = DEFAULT_RELEASES.map((rel) => {
-        const memExtra = rel.isLatest ? (inMemoryDownloadCounts[rel.platform] || 0) : 0;
+        const key = rel.platform === "other_devices" ? "other_devices" : rel.platform;
+        const globalExtra = rel.isLatest ? (globalCounts[key] || 0) : 0;
         return {
           ...rel,
-          downloads: rel.downloads + memExtra,
+          downloads: Math.max(rel.downloads, globalExtra),
         };
       });
     }
@@ -153,9 +157,11 @@ export async function GET(request: Request) {
     });
   } catch (error) {
     console.error("Error fetching download statistics:", error);
+    const globalCounts: Record<string, number> = await getGlobalCounts().catch(() => ({}));
     const fallbackReleases = DEFAULT_RELEASES.map((rel) => {
-      const memExtra = rel.isLatest ? (inMemoryDownloadCounts[rel.platform] || 0) : 0;
-      return { ...rel, downloads: rel.downloads + memExtra };
+      const key = rel.platform === "other_devices" ? "other_devices" : rel.platform;
+      const globalExtra = rel.isLatest ? (globalCounts[key] || 0) : 0;
+      return { ...rel, downloads: Math.max(rel.downloads, globalExtra) };
     });
     const totalDownloads = fallbackReleases.reduce((sum, r) => sum + r.downloads, 0);
     return NextResponse.json({

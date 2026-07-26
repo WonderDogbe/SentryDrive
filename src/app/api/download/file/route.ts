@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 import { prisma } from "@/lib/db";
-import { incrementInMemoryCount } from "@/lib/memoryStore";
+import { incrementGlobalCount } from "@/lib/globalStore";
 
 export const dynamic = "force-dynamic";
 
@@ -51,8 +51,8 @@ export async function GET(request: Request) {
       // Fallback binary payload if setup file is missing in workspace
       const fallbackContent = Buffer.from(`SentryDrive Desktop Setup Payload (${platform})`);
       
-      // Increment in-memory counter
-      incrementInMemoryCount(platform);
+      // Increment global serverless counter
+      await incrementGlobalCount(platform);
 
       // Increment Prisma DB counter if DB is accessible
       await prisma.releaseDownload.updateMany({
@@ -88,10 +88,10 @@ export async function GET(request: Request) {
       if (bytesTransferred >= stat.size && !isCompleted) {
         isCompleted = true;
         try {
-          // Always increment in-memory counter
-          incrementInMemoryCount(platform);
+          // Always increment global store (works on Vercel & Redis)
+          await incrementGlobalCount(platform);
 
-          // Try updating Prisma DB
+          // Try updating Prisma DB if persistent
           if (versionParam) {
             await prisma.releaseDownload.updateMany({
               where: { platform, version: versionParam },
