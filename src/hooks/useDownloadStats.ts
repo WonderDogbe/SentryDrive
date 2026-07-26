@@ -35,9 +35,8 @@ export function useDownloadStats(platform: string = "windows"): DownloadStatsRes
 
   const fetchStats = useCallback(async () => {
     try {
-      setIsLoading(true);
       setError(null);
-      const res = await fetch(`/api/downloads?platform=${encodeURIComponent(platform)}`, {
+      const res = await fetch(`/api/downloads?platform=${encodeURIComponent(platform)}&_t=${Date.now()}`, {
         cache: "no-store",
       });
 
@@ -61,6 +60,18 @@ export function useDownloadStats(platform: string = "windows"): DownloadStatsRes
 
   useEffect(() => {
     fetchStats();
+
+    // Auto-poll every 3 seconds to keep counts live across all sessions
+    const interval = setInterval(fetchStats, 3000);
+
+    // Re-fetch when browser window regains focus after download
+    const handleFocus = () => fetchStats();
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("focus", handleFocus);
+    };
   }, [fetchStats]);
 
   return {

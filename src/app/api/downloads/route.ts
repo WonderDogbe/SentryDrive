@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { syncGitHubReleases } from "@/lib/githubSync";
+import { inMemoryDownloadCounts } from "@/lib/memoryStore";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +15,6 @@ function formatCompactNumber(num: number): string {
   return num.toLocaleString("en-US");
 }
 
-// Default baseline release records if SQLite file is unavailable on Vercel serverless environment
 const DEFAULT_RELEASES = [
   {
     id: "default-040-win",
@@ -86,7 +86,6 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const targetPlatform = searchParams.get("platform") || "windows";
 
-    // Attempt GitHub Releases API sync
     await syncGitHubReleases().catch((err) =>
       console.warn("GitHub release sync non-blocking error:", err)
     );
@@ -94,7 +93,6 @@ export async function GET(request: Request) {
     let mappedReleases: typeof DEFAULT_RELEASES = [];
 
     try {
-      // Attempt Prisma database read
       const dbReleases = await prisma.releaseDownload.findMany({
         orderBy: [
           { releasedAt: "desc" },
@@ -103,29 +101,35 @@ export async function GET(request: Request) {
       });
 
       if (dbReleases && dbReleases.length > 0) {
-        mappedReleases = dbReleases.map((rel) => ({
-          id: rel.id,
-          version: rel.version,
-          platform: rel.platform,
-          downloads: rel.downloadCount,
-          downloadUrl: rel.downloadUrl,
-          isLatest: rel.isLatest,
-          releasedAt: rel.releasedAt.toISOString(),
-        }));
+        mappedReleases = dbReleases.map((rel) => {
+          const memExtra = rel.isLatest ? (inMemoryDownloadCounts[rel.platform] || 0) : 0;
+          return {
+            id: rel.id,
+            version: rel.version,
+            platform: rel.platform,
+            downloads: rel.downloadCount + memExtra,
+            downloadUrl: rel.downloadUrl,
+            isLatest: rel.isLatest,
+            releasedAt: rel.releasedAt.toISOString(),
+          };
+        });
       }
     } catch (dbError) {
-      console.warn("Prisma DB read error on Vercel serverless lambda, falling back to default releases:", dbError);
+      console.warn("Prisma DB read error, using default releases with in-memory counts:", dbError);
     }
 
-    // If database query failed or returned no rows on Vercel deployment, use DEFAULT_RELEASES
     if (mappedReleases.length === 0) {
-      mappedReleases = DEFAULT_RELEASES;
+      mappedReleases = DEFAULT_RELEASES.map((rel) => {
+        const memExtra = rel.isLatest ? (inMemoryDownloadCounts[rel.platform] || 0) : 0;
+        return {
+          ...rel,
+          downloads: rel.downloads + memExtra,
+        };
+      });
     }
 
-    // Calculate real lifetime total across all version downloads
     const totalDownloads = mappedReleases.reduce((sum, r) => sum + r.downloads, 0);
 
-    // Identify current stable version
     const latestRelease = mappedReleases.find(
       (r) => r.platform.toLowerCase() === targetPlatform.toLowerCase() && r.isLatest
     ) || mappedReleases.find((r) => r.isLatest) || mappedReleases[0];
@@ -144,20 +148,23 @@ export async function GET(request: Request) {
     return NextResponse.json(responsePayload, {
       status: 200,
       headers: {
-        "Cache-Control": "no-store, max-age=0",
+        "Cache-Control": "no-store, no-cache, must-revalidate",
       },
     });
   } catch (error) {
     console.error("Error fetching download statistics:", error);
-    // Bulletproof fallback so Vercel deployment NEVER returns an empty payload
-    const totalDownloads = DEFAULT_RELEASES.reduce((sum, r) => sum + r.downloads, 0);
+    const fallbackReleases = DEFAULT_RELEASES.map((rel) => {
+      const memExtra = rel.isLatest ? (inMemoryDownloadCounts[rel.platform] || 0) : 0;
+      return { ...rel, downloads: rel.downloads + memExtra };
+    });
+    const totalDownloads = fallbackReleases.reduce((sum, r) => sum + r.downloads, 0);
     return NextResponse.json({
       totalDownloads,
       formattedTotal: totalDownloads.toLocaleString("en-US"),
       compactTotal: formatCompactNumber(totalDownloads),
       currentVersion: "0.4.0",
       platform: "windows",
-      releases: DEFAULT_RELEASES,
+      releases: fallbackReleases,
     });
   }
 }

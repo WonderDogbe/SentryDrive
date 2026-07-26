@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 import { prisma } from "@/lib/db";
+import { incrementInMemoryCount } from "@/lib/memoryStore";
 
 export const dynamic = "force-dynamic";
 
@@ -50,13 +51,16 @@ export async function GET(request: Request) {
       // Fallback binary payload if setup file is missing in workspace
       const fallbackContent = Buffer.from(`SentryDrive Desktop Setup Payload (${platform})`);
       
-      // Increment verified download count for target release
+      // Increment in-memory counter
+      incrementInMemoryCount(platform);
+
+      // Increment Prisma DB counter if DB is accessible
       await prisma.releaseDownload.updateMany({
         where: versionParam
           ? { platform, version: versionParam }
           : { platform, isLatest: true },
         data: { downloadCount: { increment: 1 } },
-      });
+      }).catch((e) => console.warn("Prisma increment error (ignored on serverless):", e));
 
       return new NextResponse(fallbackContent, {
         status: 200,
@@ -84,6 +88,10 @@ export async function GET(request: Request) {
       if (bytesTransferred >= stat.size && !isCompleted) {
         isCompleted = true;
         try {
+          // Always increment in-memory counter
+          incrementInMemoryCount(platform);
+
+          // Try updating Prisma DB
           if (versionParam) {
             await prisma.releaseDownload.updateMany({
               where: { platform, version: versionParam },
@@ -97,7 +105,7 @@ export async function GET(request: Request) {
           }
           console.log(`[Download Complete] Verified 100% completion for ${platform} (${bytesTransferred}/${stat.size} bytes). Counter incremented.`);
         } catch (err) {
-          console.error("Error recording verified download count:", err);
+          console.error("Error recording verified download count in DB:", err);
         }
       }
     });
