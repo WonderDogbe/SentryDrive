@@ -14,10 +14,100 @@ function formatCompactNumber(num: number): string {
   return num.toLocaleString("en-US");
 }
 
+// Auto-seed default release records if database is empty on serverless / Vercel deployment
+async function ensureInitialReleasesExist() {
+  try {
+    const count = await prisma.releaseDownload.count();
+    if (count > 0) return;
+
+    console.log("Database is empty. Auto-initializing baseline release records...");
+
+    const initialReleases = [
+      {
+        version: "0.1.0",
+        platform: "windows",
+        downloadCount: 0,
+        downloadUrl: "/api/download/file?v=0.1.0&platform=windows",
+        isLatest: false,
+        releasedAt: new Date("2026-05-01T00:00:00Z"),
+      },
+      {
+        version: "0.2.0",
+        platform: "windows",
+        downloadCount: 0,
+        downloadUrl: "/api/download/file?v=0.2.0&platform=windows",
+        isLatest: false,
+        releasedAt: new Date("2026-06-01T00:00:00Z"),
+      },
+      {
+        version: "0.3.0",
+        platform: "windows",
+        downloadCount: 0,
+        downloadUrl: "/api/download/file?v=0.3.0&platform=windows",
+        isLatest: false,
+        releasedAt: new Date("2026-07-01T00:00:00Z"),
+      },
+      {
+        version: "0.4.0",
+        platform: "windows",
+        downloadCount: 0,
+        downloadUrl: "/api/download/file?v=0.4.0&platform=windows",
+        isLatest: true,
+        releasedAt: new Date("2026-07-20T00:00:00Z"),
+      },
+      {
+        version: "0.4.0",
+        platform: "macOS",
+        downloadCount: 0,
+        downloadUrl: "/api/download/file?v=0.4.0&platform=macOS",
+        isLatest: true,
+        releasedAt: new Date("2026-07-20T00:00:00Z"),
+      },
+      {
+        version: "0.4.0",
+        platform: "linux",
+        downloadCount: 0,
+        downloadUrl: "/api/download/file?v=0.4.0&platform=linux",
+        isLatest: true,
+        releasedAt: new Date("2026-07-20T00:00:00Z"),
+      },
+      {
+        version: "0.4.0",
+        platform: "other_devices",
+        downloadCount: 0,
+        downloadUrl: "/api/download/file?v=0.4.0&platform=other_devices",
+        isLatest: true,
+        releasedAt: new Date("2026-07-20T00:00:00Z"),
+      },
+    ];
+
+    for (const rel of initialReleases) {
+      await prisma.releaseDownload.upsert({
+        where: {
+          version_platform: {
+            version: rel.version,
+            platform: rel.platform,
+          },
+        },
+        update: {
+          isLatest: rel.isLatest,
+          downloadUrl: rel.downloadUrl,
+        },
+        create: rel,
+      });
+    }
+  } catch (err) {
+    console.error("Error auto-initializing baseline release records:", err);
+  }
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const targetPlatform = searchParams.get("platform") || "windows";
+
+    // Auto-initialize if database is empty on Vercel deployment
+    await ensureInitialReleasesExist();
 
     // Synchronize real release metrics from GitHub API asynchronously if available
     await syncGitHubReleases().catch((err) =>
@@ -25,12 +115,23 @@ export async function GET(request: Request) {
     );
 
     // Fetch real releases from the database
-    const releases = await prisma.releaseDownload.findMany({
+    let releases = await prisma.releaseDownload.findMany({
       orderBy: [
         { releasedAt: "desc" },
         { version: "desc" }
       ],
     });
+
+    // Fallback double check if empty
+    if (releases.length === 0) {
+      await ensureInitialReleasesExist();
+      releases = await prisma.releaseDownload.findMany({
+        orderBy: [
+          { releasedAt: "desc" },
+          { version: "desc" }
+        ],
+      });
+    }
 
     // Calculate real lifetime total across all version downloads
     const totalDownloads = releases.reduce((sum, r) => sum + r.downloadCount, 0);
