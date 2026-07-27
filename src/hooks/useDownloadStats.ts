@@ -28,7 +28,7 @@ export function useDownloadStats(platform: string = "windows"): DownloadStatsRes
   const [totalDownloads, setTotalDownloads] = useState<number>(0);
   const [formattedTotal, setFormattedTotal] = useState<string>("0");
   const [compactTotal, setCompactTotal] = useState<string>("0");
-  const [currentVersion, setCurrentVersion] = useState<string>("0.4.0");
+  const [currentVersion, setCurrentVersion] = useState<string>("0.5.0");
   const [releases, setReleases] = useState<ReleaseItem[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -48,7 +48,7 @@ export function useDownloadStats(platform: string = "windows"): DownloadStatsRes
       setTotalDownloads(data.totalDownloads ?? 0);
       setFormattedTotal(data.formattedTotal ?? "0");
       setCompactTotal(data.compactTotal ?? "0");
-      setCurrentVersion(data.currentVersion ?? "0.4.0");
+      setCurrentVersion(data.currentVersion ?? "0.5.0");
       setReleases(data.releases ?? []);
     } catch (err) {
       console.error("Error in useDownloadStats hook:", err);

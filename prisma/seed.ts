@@ -3,14 +3,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("Resetting all release download counts to 0...");
-
-  // Explicitly reset all existing database records to 0
-  await prisma.releaseDownload.updateMany({
-    data: {
-      downloadCount: 0,
-    },
-  });
+  console.log("Seeding release records for target platforms including v0.5.0...");
 
   const initialReleases = [
     {
@@ -42,34 +35,49 @@ async function main() {
       platform: "windows",
       downloadCount: 0,
       downloadUrl: "/api/download/file?v=0.4.0&platform=windows",
-      isLatest: true,
+      isLatest: false,
       releasedAt: new Date("2026-07-20T00:00:00Z"),
     },
     {
-      version: "0.4.0",
+      version: "0.5.0",
+      platform: "windows",
+      downloadCount: 0,
+      downloadUrl: "/api/download/file?v=0.5.0&platform=windows",
+      isLatest: true,
+      releasedAt: new Date("2026-07-27T00:00:00Z"),
+    },
+    {
+      version: "0.5.0",
       platform: "macOS",
       downloadCount: 0,
-      downloadUrl: "/api/download/file?v=0.4.0&platform=macOS",
+      downloadUrl: "/api/download/file?v=0.5.0&platform=macOS",
       isLatest: true,
-      releasedAt: new Date("2026-07-20T00:00:00Z"),
+      releasedAt: new Date("2026-07-27T00:00:00Z"),
     },
     {
-      version: "0.4.0",
+      version: "0.5.0",
       platform: "linux",
       downloadCount: 0,
-      downloadUrl: "/api/download/file?v=0.4.0&platform=linux",
+      downloadUrl: "/api/download/file?v=0.5.0&platform=linux",
       isLatest: true,
-      releasedAt: new Date("2026-07-20T00:00:00Z"),
+      releasedAt: new Date("2026-07-27T00:00:00Z"),
     },
     {
-      version: "0.4.0",
+      version: "0.5.0",
       platform: "other_devices",
       downloadCount: 0,
-      downloadUrl: "/api/download/file?v=0.4.0&platform=other_devices",
+      downloadUrl: "/api/download/file?v=0.5.0&platform=other_devices",
       isLatest: true,
-      releasedAt: new Date("2026-07-20T00:00:00Z"),
+      releasedAt: new Date("2026-07-27T00:00:00Z"),
     },
   ];
+
+  // Mark all older records as not latest first
+  await prisma.releaseDownload.updateMany({
+    data: {
+      isLatest: false,
+    },
+  });
 
   for (const rel of initialReleases) {
     await prisma.releaseDownload.upsert({
@@ -80,7 +88,6 @@ async function main() {
         },
       },
       update: {
-        downloadCount: 0,
         isLatest: rel.isLatest,
         downloadUrl: rel.downloadUrl,
       },
@@ -88,7 +95,7 @@ async function main() {
     });
   }
 
-  console.log("Database reset complete. All download counts are strictly 0.");
+  console.log("Database seeding complete for version 0.5.0.");
 }
 
 main()

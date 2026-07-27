@@ -6,16 +6,17 @@ import { incrementGlobalCount } from "@/lib/globalStore";
 
 export const dynamic = "force-dynamic";
 
-function getFilenameForPlatform(platform: string): string {
+function getFilenameForPlatform(platform: string, version: string = "0.5.0"): string {
+  const ver = version || "0.5.0";
   switch (platform.toLowerCase()) {
     case "macos":
-      return "SentryDrive_0.4.0_x64.dmg";
+      return `SentryDrive_${ver}_x64.dmg`;
     case "linux":
-      return "SentryDrive_0.4.0_x64.AppImage";
+      return `SentryDrive_${ver}_x64.AppImage`;
     case "other_devices":
     case "windows":
     default:
-      return "Sentry Drive_0.4.0_x64-setup.exe";
+      return `Sentry Drive_${ver}_x64-setup.exe`;
   }
 }
 
@@ -23,7 +24,7 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const platformParam = (searchParams.get("platform") || "").toLowerCase();
-    const versionParam = searchParams.get("version") || searchParams.get("v");
+    const versionParam = searchParams.get("version") || searchParams.get("v") || "0.5.0";
     const userAgent = (request.headers.get("user-agent") || "").toLowerCase();
 
     // Detect mobile device user agents
@@ -44,12 +45,22 @@ export async function GET(request: Request) {
       platform = "linux";
     }
 
-    const filename = getFilenameForPlatform(platform);
-    const filePath = path.join(process.cwd(), "public", filename);
+    let filename = getFilenameForPlatform(platform, versionParam);
+    let filePath = path.join(process.cwd(), "public", filename);
+
+    // If specific file doesn't exist, try fallback to latest 0.5.0 executable
+    if (!fs.existsSync(filePath) && (platform === "windows" || platform === "other_devices")) {
+      const latestExe = "Sentry Drive_0.5.0_x64-setup.exe";
+      const latestPath = path.join(process.cwd(), "public", latestExe);
+      if (fs.existsSync(latestPath)) {
+        filename = latestExe;
+        filePath = latestPath;
+      }
+    }
 
     if (!fs.existsSync(filePath)) {
       // Fallback binary payload if setup file is missing in workspace
-      const fallbackContent = Buffer.from(`SentryDrive Desktop Setup Payload (${platform})`);
+      const fallbackContent = Buffer.from(`SentryDrive Desktop Setup Payload (${platform} v${versionParam})`);
       
       // Increment global serverless counter
       await incrementGlobalCount(platform);
@@ -103,7 +114,7 @@ export async function GET(request: Request) {
               data: { downloadCount: { increment: 1 } },
             });
           }
-          console.log(`[Download Complete] Verified 100% completion for ${platform} (${bytesTransferred}/${stat.size} bytes). Counter incremented.`);
+          console.log(`[Download Complete] Verified 100% completion for ${platform} v${versionParam} (${bytesTransferred}/${stat.size} bytes). Counter incremented.`);
         } catch (err) {
           console.error("Error recording verified download count in DB:", err);
         }

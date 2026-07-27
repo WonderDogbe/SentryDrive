@@ -42,7 +42,7 @@ export default function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
 
   const handleSelectPlatform = (platform: string) => {
     onClose();
-    window.location.href = `/api/download/${encodeURIComponent(platform)}`;
+    window.location.href = `/api/download/${encodeURIComponent(platform)}?v=0.5.0`;
   };
 
   const platformDefinitions = [
@@ -178,7 +178,7 @@ export default function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
               Verified Official Installer
             </span>
             <span className="font-mono text-zinc-900 dark:text-zinc-200 font-bold bg-slate-100 dark:bg-zinc-800 px-2.5 py-1 rounded-md border border-slate-300 dark:border-zinc-700">
-              v0.4.0 Latest
+              v0.5.0 Latest
             </span>
           </div>
         </motion.div>

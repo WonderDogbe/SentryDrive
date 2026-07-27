@@ -17,39 +17,48 @@ function formatCompactNumber(num: number): string {
 
 const DEFAULT_RELEASES = [
   {
+    id: "default-050-win",
+    version: "0.5.0",
+    platform: "windows",
+    downloads: 0,
+    downloadUrl: "/api/download/file?v=0.5.0&platform=windows",
+    isLatest: true,
+    releasedAt: "2026-07-27T00:00:00.000Z",
+  },
+  {
+    id: "default-050-mac",
+    version: "0.5.0",
+    platform: "macOS",
+    downloads: 0,
+    downloadUrl: "/api/download/file?v=0.5.0&platform=macOS",
+    isLatest: true,
+    releasedAt: "2026-07-27T00:00:00.000Z",
+  },
+  {
+    id: "default-050-linux",
+    version: "0.5.0",
+    platform: "linux",
+    downloads: 0,
+    downloadUrl: "/api/download/file?v=0.5.0&platform=linux",
+    isLatest: true,
+    releasedAt: "2026-07-27T00:00:00.000Z",
+  },
+  {
+    id: "default-050-other",
+    version: "0.5.0",
+    platform: "other_devices",
+    downloads: 0,
+    downloadUrl: "/api/download/file?v=0.5.0&platform=other_devices",
+    isLatest: true,
+    releasedAt: "2026-07-27T00:00:00.000Z",
+  },
+  {
     id: "default-040-win",
     version: "0.4.0",
     platform: "windows",
     downloads: 0,
     downloadUrl: "/api/download/file?v=0.4.0&platform=windows",
-    isLatest: true,
-    releasedAt: "2026-07-20T00:00:00.000Z",
-  },
-  {
-    id: "default-040-mac",
-    version: "0.4.0",
-    platform: "macOS",
-    downloads: 0,
-    downloadUrl: "/api/download/file?v=0.4.0&platform=macOS",
-    isLatest: true,
-    releasedAt: "2026-07-20T00:00:00.000Z",
-  },
-  {
-    id: "default-040-linux",
-    version: "0.4.0",
-    platform: "linux",
-    downloads: 0,
-    downloadUrl: "/api/download/file?v=0.4.0&platform=linux",
-    isLatest: true,
-    releasedAt: "2026-07-20T00:00:00.000Z",
-  },
-  {
-    id: "default-040-other",
-    version: "0.4.0",
-    platform: "other_devices",
-    downloads: 0,
-    downloadUrl: "/api/download/file?v=0.4.0&platform=other_devices",
-    isLatest: true,
+    isLatest: false,
     releasedAt: "2026-07-20T00:00:00.000Z",
   },
   {
@@ -141,7 +150,7 @@ export async function GET(request: Request) {
       (r) => r.platform.toLowerCase() === targetPlatform.toLowerCase() && r.isLatest
     ) || mappedReleases.find((r) => r.isLatest) || mappedReleases[0];
 
-    const currentVersion = latestRelease ? latestRelease.version : "0.4.0";
+    const currentVersion = latestRelease ? latestRelease.version : "0.5.0";
 
     const responsePayload = {
       totalDownloads,
@@ -171,7 +180,7 @@ export async function GET(request: Request) {
       totalDownloads,
       formattedTotal: totalDownloads.toLocaleString("en-US"),
       compactTotal: formatCompactNumber(totalDownloads),
-      currentVersion: "0.4.0",
+      currentVersion: "0.5.0",
       platform: "windows",
       releases: fallbackReleases,
     });
